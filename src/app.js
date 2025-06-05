@@ -23,7 +23,20 @@ db.connect(err => {
 });
 
 app.get('/products', (req, res) => {
-  db.query('SELECT * FROM products', (err, results) => {
+  const { tons } = req.query; // Получаем параметр tons из query-строки
+
+  // Базовый SQL запрос
+  let sql = 'SELECT * FROM products';
+  const params = [];
+
+  // Если параметр tons передан, добавляем условие WHERE
+  if (tons) {
+    sql += ' WHERE tons = ?';
+    params.push(tons);
+  }
+
+  // Выполняем запрос с параметрами
+  db.query(sql, params, (err, results) => {
     if (err) return res.status(500).send('Ошибка БД');
     res.json(results);
   });
